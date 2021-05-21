@@ -1,0 +1,7 @@
+Error:
+Enter the data :  101010010101
+Enter the key : 11001
+
+Success:
+Enter the data :  1100111001
+Enter the key : 11001
