@@ -7,6 +7,10 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
+#define IP_Protocol 0
+#define IP_Address "127.0.0.1" // localhost
+#define Port_No 15050
+
 #define RESET(buff) for(i=0;i<100;i++) buff[i]='\0';
 
 void error(const char *msg) {
@@ -42,8 +46,8 @@ char *crc(char *msg,char *key) {
                 rem[k] = temp[j+k] = (temp[j+k] == key[k]) ? '0' : '1';
             }
         }
-        printf("%s\n",temp);
-        printf("%s\n",rem);
+//        printf("%s\n",temp);
+//        printf("%s\n",rem);
     }
 
     // Reduce remainder
@@ -60,12 +64,9 @@ struct sockaddr_in serv_addr;
 char buff[100], key[100], data[100];
 char *res=malloc(30);
     
-//Checking the provided port no
-if (argc < 3)
-    error("Port No not provided");
 serv_addr.sin_family = AF_INET;
-serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
-serv_addr.sin_port = htons(atoi(argv[2]));
+serv_addr.sin_addr.s_addr = inet_addr(IP_Address);
+serv_addr.sin_port = htons(Port_No);
 
 //Socket
 if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
