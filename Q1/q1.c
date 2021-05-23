@@ -104,7 +104,7 @@ int server()
         
         char buf[BUF_SIZE]={0};
         read(connfd, buf, sizeof(buf));
-        printf("%s_ashutosh_testing\n",buf);
+        printf("%s\n",buf);
         
         char filename[BUF_SIZE];
         strcpy(filename,buf);
