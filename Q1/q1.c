@@ -13,8 +13,6 @@
 #include <netdb.h>
 
 // For client
-
-
 #define PORT 5000
 #define BUF_SIZE 256
 
@@ -156,7 +154,7 @@ int server()
 
 int main(int argc, char** argv)
 {
-    if (1)
+    if (argc==2)
     {
         const char* mode = argv[1];
         const char* filename = argv[2];
@@ -169,7 +167,7 @@ int main(int argc, char** argv)
     }
     else
     {
-        printf("Invalid number of argument, usage is %s [MODE] [FILENAME]\n",argv[0]);
+        printf("Invalid arguments.\n");
     }
     return 0;
 }
