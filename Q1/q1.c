@@ -55,7 +55,7 @@ int client()
         printf("\n Error : Connect Failed \n");
         return 1;
     }
-
+    
     /* Receive data in chunks of BUF_SIZE bytes */
     int bytesReceived = 0;
     char buff[BUF_SIZE];
@@ -73,7 +73,7 @@ int client()
     {
         printf("\n Read Error \n");
     }
-
+    
     return 0;
 }
 
@@ -101,54 +101,56 @@ int server()
     for (;;)
     {
         int connfd = accept(listenfd, (struct sockaddr*)NULL ,NULL);
-        
-        char buf[BUF_SIZE]={0};
-        read(connfd, buf, sizeof(buf));
-        printf("%s\n",buf);
-        
-        char filename[BUF_SIZE];
-        strcpy(filename,buf);
-        
-        /* Open the file that we wish to transfer */
-        FILE *fp = fopen(filename,"rb");
-        if(fp==NULL)
-        {
-            printf("File opern error");
-            return 1;
-        }
-
-        /* Read data from file and send it */
-        for (;;)
-        {
-            /* First read file in chunks of BUF_SIZE bytes */
-            unsigned char buff[BUF_SIZE]={0};
-            int nread = fread(buff,1,BUF_SIZE,fp);
-            printf("Bytes read %d \n", nread);
-
-            /* If read was success, send data. */
-            if(nread > 0)
+        printf("Connection accepted with client %d\n",connfd);
+        pid_t childpid;
+        if ((childpid = fork()) == 0) {
+            
+            char buf[BUF_SIZE]={0};
+            read(connfd, buf, sizeof(buf));
+            printf("%s\n",buf);
+            
+            char filename[BUF_SIZE];
+            strcpy(filename,buf);
+            
+            /* Open the file that we wish to transfer */
+            FILE *fp = fopen(filename,"rb");
+            if(fp==NULL)
             {
-                printf("Sending \n");
-                write(connfd, buff, nread);
+                printf("File opern error");
+                return 1;
             }
 
-            /*
-             * There is something tricky going on with read ..
-             * Either there was error, or we reached end of file.
-             */
-            if (nread < BUF_SIZE)
+            /* Read data from file and send it */
+            for (;;)
             {
-                if (feof(fp))
-                    printf("End of file\n");
-                if (ferror(fp))
-                    printf("Error reading\n");
-                break;
+                /* First read file in chunks of BUF_SIZE bytes */
+                unsigned char buff[BUF_SIZE]={0};
+                int nread = fread(buff,1,BUF_SIZE,fp);
+                printf("Bytes read %d \n", nread);
+
+                /* If read was success, send data. */
+                if(nread > 0)
+                {
+                    printf("Sending \n");
+                    write(connfd, buff, nread);
+                }
+
+                /*
+                 * There is something tricky going on with read ..
+                 * Either there was error, or we reached end of file.
+                 */
+                if (nread < BUF_SIZE)
+                {
+                    if (feof(fp))
+                        printf("End of file\n");
+                    if (ferror(fp))
+                        printf("Error reading\n");
+                    break;
+                }
             }
         }
         close(connfd);
-        sleep(1);
     }
-
     return 0;
 }
 
